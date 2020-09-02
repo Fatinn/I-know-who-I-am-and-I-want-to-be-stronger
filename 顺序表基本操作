@@ -1,0 +1,49 @@
+Status ListInsert_Sq(SqList &L, int pos, ElemType e)
+{
+    if(L.length + 1< pos || pos<=0 )
+        return OVERFLOW;
+    if(L.length>=L.listsize)
+    {
+        L.elem=(ElemType*)realloc(L.elem,(LIST_INIT_SIZE+LISTINCREMENT)*sizeof(ElemType));
+        L.listsize +=LISTINCREMENT;
+    }
+    ElemType *p;
+    for(p=L.elem +L.length ; p>=L.elem +pos-1 ; --p)
+    {
+        *(p+1) = *p;
+    }
+    *(p+1) = e;
+    L.length++;
+    return OK;
+}
+
+Status ListDelete_Sq(SqList &L, int pos, ElemType &e)
+{
+    if(pos <=0 || L.length + 1 < pos)
+        return ERROR;
+    e = *(L.elem + pos -1);
+    ElemType *p;
+    for(p=L.elem+pos-1; p<=L.elem +L.length-1; p++)
+        *(p)=*(p+1);
+    L.length--;
+    return OK;
+}
+
+int ListLocate_Sq(SqList L, ElemType e)
+{
+    for(int i=0; i<L.length; i++)
+    {
+        if( *(L.elem+i) == e )
+            return(i+1);
+    }
+    return 0;
+}
+
+void ListPrint_Sq(SqList L)
+{
+    for(int i=0; i<L.length-1; i++)
+    {
+        printf("%d ",*(L.elem+i));
+    }
+    printf("%d",*(L.elem+L.length - 1));
+}
