@@ -1,0 +1,45 @@
+#include <stdio.h>
+#define MAX 1000010
+int pre[MAX];
+int Find(int x)
+{
+	int p,temp;
+	p=x;
+	while(x!=pre[x])			//找上家 pre里存的是当前节点的上一个节点
+				x=pre[x];
+	while(p!=x)					//压缩路线
+				{				
+			    temp=pre[p];//先让temp等于这个节点的上一个节点	
+					pre[p] =x;	// 然后将此节点连接到最初节点
+					p=temp;		//在讲temp给p 进行下一轮的路线压缩
+				}
+				return x;		//最后实现同一个集里的节点都指向一个节点
+}
+
+				
+int main(){
+	
+	int cnt;
+	int m,n;
+	scanf("%d%d",&m,&n);
+	cnt=m*n;
+	for(int i=0; i<=cnt; i++)
+		pre[i] = i;
+	int k;
+	scanf("%d",&k);
+	for(int i=0; i<k; i++)
+	{
+		int a,b;			
+		scanf("%d%d",&a,&b);
+		int aa=Find(a);			//每输入两个节点
+		int bb=Find(b);			//就去找他们的头
+		if(aa!=bb)
+		{
+			pre[aa]=pre[bb];	//如果两个节点不属于同一个集合 那就把他们合到一起
+			cnt--;				//此题因为要求最后的合根数  所以每合成一个  总数就减一
+		}
+	}
+	printf("%d",cnt);			//最后输出个数
+	
+	return 0;
+}
