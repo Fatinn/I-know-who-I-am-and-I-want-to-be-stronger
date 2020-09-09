@@ -1,0 +1,31 @@
+/*
+
+此题模拟除法的计算过程即可
+
+*/
+
+
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	long long i,a,b,t,n;
+	cin>>a>>b>>n;
+	a=a%b;		//直接取让a等于a除以b后的余数
+	while(n-10>0)			//用来快速逼近小数点后第n位的位置
+	{
+		a*=1e10;
+		a%=b;
+		n-=10;
+	}
+	for(i=0;i<n+2;i++)
+	{
+		a*=10;				//按照除法算法 余数应先添零  也就是乘时
+		if(i>=n-1) cout<<a/b;	//如果到了三位中的第一位了  输出a/b 
+		a%=b;			   //如果没有到 则取余 进入下一轮的计算
+	}
+	return 0;
+	
+}
