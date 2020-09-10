@@ -1,0 +1,220 @@
+求最小生成树的Kruskal算法{
+
+它的贪心策略是按权从小到大选取各条边，同时以所选取的边的两个顶点
+不在一个顶点子集作为取舍的约束条件（可用于保证选出的边不会构成回路）。
+
+那么步骤就是先将各条边按其权值有小到大排列；
+
+先把每个顶点分为n个子集，每个子集只含一个顶点（即开始时顶点集分解为n个
+互不连通的部分）
+
+然后按照从大到小的顺序，如果两个顶点不在一个子集 那么就合并子集
+
+总体上，时间复杂性的阶为O（mn）
+
+#include <cstdio>
+#include <cstdlib>
+#define MAXN 10000 + 10
+using namespace std;
+ 
+int par[MAXN], Rank[MAXN];
+typedef struct{
+    int a, b, price;
+}Node;
+Node a[MAXN];
+ 
+int cmp(const void*a, const void *b){
+    return ((Node*)a)->price - ((Node*)b)->price;
+}
+void Init(int n){
+    for(int i = 0; i < n; i++){
+        Rank[i] = 0;
+        par[i] = i;
+    }
+}
+ 
+int find(int x){
+    int root = x;
+    while(root != par[root]) root = par[root];
+    while(x != root){
+        int t = par[x];
+        par[x] = root;
+        x = t;
+    }
+    return root;
+}
+ 
+void unite(int x, int y){
+    x = find(x);
+    y = find(y);
+    if(Rank[x] < Rank[y]){
+        par[x] = y;
+    }
+    else{
+        par[y] = x;
+        if(Rank[x] == Rank[y]) Rank[x]++;
+    }
+}
+//n为边的数量，m为村庄的数量
+int Kruskal(int n, int m){
+    int nEdge = 0, res = 0;
+    //将边按照权值从小到大排序
+    qsort(a, n, sizeof(a[0]), cmp);
+    for(int i = 0; i < n && nEdge != m - 1; i++){
+        //判断当前这条边的两个端点是否属于同一棵树
+        if(find(a[i].a) != find(a[i].b)){
+            unite(a[i].a, a[i].b);
+            res += a[i].price;
+            nEdge++;
+        }
+    }
+    //如果加入边的数量小于m - 1,则表明该无向图不连通,等价于不存在最小生成树
+    if(nEdge < m-1) res = -1;
+    return res;
+}
+int main(){
+    int n, m, ans;
+    while(scanf("%d%d", &n, &m), n){
+        Init(m);
+        for(int i = 0; i < n; i++){
+            scanf("%d%d%d", &a[i].a, &a[i].b, &a[i].price);
+            //将村庄编号变为0~m-1（这个仅仅只是个人习惯，并非必要的）
+            a[i].a--;
+            a[i].b--;
+        }
+        ans = Kruskal(n, m);
+        if(ans == -1) printf("?\n");
+        else printf("%d\n", ans);
+    }
+    return 0;
+}
+
+}
+
+哈夫曼编码{
+
+将字母表n中各个字符安在文本中出现的概率以递减的顺序从左到右排列。
+每个字符作为一个节点，节点内写上字符出现的概率。
+假设把一个孤立节点看作一个二叉树。那么一开始就有n个二叉树。
+
+对二叉树重复进行下列操作，直到他们合成一个二叉树，每个字符的节点变成
+这个二叉树的节点：
+挑选根节点缩写上的概率数值最小的两个二叉树，用一个新增的节点作为新的根节点
+把他们连接起来。两个字二叉树根节点的概率之和就是新增的根节点上写的概率。
+根节点到概率大的子树的连接边上标注0，到概率小的子树的链接边上标注1
+
+各字符的哈夫曼编码就是从从这个二叉树中，从根节点到表示该字符的叶节点的路上
+各边的旁标按顺序链接起来的0-1序列。
+
+//定义一个哈夫曼树
+typedef struct {
+	//定义权值
+	unsigned int weight;
+	unsigned int parent, lchild, rchild;
+}HTNode, *HuffmanTree;
+
+typedef char** HuffmanCode;
+
+//创建一个哈夫曼树
+void CreateHuffmanTree(HuffmanTree* HT, int* w, int n) {
+	int m = 0; //结点的总数(⊙﹏⊙)
+	HuffmanTree adjust = NULL; //定义一个调整指针, 存放即时指向结点
+	int i = 0; //即时调整索引
+	//存放两个最小值
+	int s1 = 0;
+	int s2 = 0;
+	//判断输入是否合理
+	if (n <= 1) {
+		return;
+	}
+	m = 2 * n - 1;
+	//动态分配内存空间存放结点
+	*HT = (HuffmanTree)malloc((m + 1) * sizeof(HTNode));
+	if (!*HT) {
+		exit(-1);
+	}
+	//初始化叶子结点, 第一个结点为空
+	for (adjust = *HT + 1, i = 1; i <= n; ++adjust, ++i) {
+		adjust->weight = *(w + i - 1);
+		adjust->parent = 0;
+		adjust->lchild = 0;
+		adjust->rchild = 0;
+	}
+	//将最后一个结点的 parent 置为 0
+	for (; i <= m; ++i, ++adjust) {
+		adjust->parent = 0;
+	}
+	for (i = n + 1; i <= m; ++i) {
+		//在前 i - 1 个结点中找出两个最小值
+		Select(HT, i - 1, &s1, &s2);
+		//找出双亲结点
+		(*HT + s1)->parent = (*HT + s2)->parent = i;
+		//找出双亲结点的两个孩子
+		(*HT + i)->lchild = s1;
+		(*HT + i)->rchild = s2;
+		//计算出双亲结点的权值
+		(*HT + i)->weight = (*HT + s1)->weight + (*HT + s2)->weight;
+	}
+}
+//返回权值最小结点的索引(访问过的结点不再访问)
+int Min(HuffmanTree HT, int n) {
+	unsigned int f_min = 100;
+	int flag = 0; //用来记录已遍历过的结点
+	for (int i = 1; i <= n; ++i) {
+		if ((HT + i)->weight < f_min && (HT + i)->parent == 0) {
+			f_min = (HT + i)->weight;
+			flag = i;
+		}
+	}
+	//给选中的结点置 1, 下次不需要再遍历
+	(HT + flag)->parent = 1;
+	return flag;
+}
+//挑选 2 个权值最小的结点
+void Select(HuffmanTree* HT, int n, int* s1, int* s2) {
+	int tmp = 0; //临时变量
+	*s1 = Min(*HT, n);
+	*s2 = Min(*HT, n);
+	//目的是 s1 的权值要不大于 s2 的权值
+	if ((*HT + *s1)->weight > (*HT + *s2)->weight) {
+		tmp = *s1;
+		*s1 = *s2;
+		*s2 = tmp;
+	}
+}
+
+void HuffmanCoding(HuffmanTree HT, HuffmanCode* HC, int n) {
+	//动态开辟内存空间存放所有非叶子节点的编码
+	*HC = (HuffmanCode)malloc((n + 1) * sizeof(char*));
+	if (!*HC) {
+		exit(-1);
+	}
+	//动态分配内存空间暂时存放某个结点的哈夫曼编码
+	char* cd = (char*)malloc(n * sizeof(char));
+	if (!cd) {
+		exit(-1);
+	}
+	//求 n 个非叶子节点的哈夫曼编码
+	*(cd + n - 1) = '\0';
+	int start = 0; //用来存放编码起始位置
+	for (int i = 1; i <= n; ++i) {
+		start = n - 1;
+		for (int c = i, f = (HT + i)->parent; f != 0; c = f, f = (HT + f)->parent) {
+			if ((HT + f)->lchild == c) {
+				*(cd + --start) = '0';
+			} else {
+				*(cd + --start) = '1';
+			}
+		}
+		//根据该结点编码字符串的长度在指定位置动态开辟存放编码的空间
+		*(*HC + i) = (char*)malloc((n - start) * sizeof(char));
+		//将暂存编码空间中的编码字符串拷贝到地址空间去
+		strcpy(*(*HC + i), cd + start);
+	}
+	//释放暂存编码字符串的空间
+	free(cd);
+}
+ 
+
+}
+
