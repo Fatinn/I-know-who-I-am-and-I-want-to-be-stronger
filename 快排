@@ -1,0 +1,30 @@
+void QuickSort(int a[], int i, int j) {
+	PivotIndex = FindPivot(a, i, j);
+	if (PivotIndex > -1)
+	{
+		Pivot = a[PivotIndex];
+		k = Partition(a, i, j, Pivot);
+		QuickSort(a, i, k - 1);
+		QuickSort(a, k, j);
+	}
+}
+int FindPivot(int a[], int i, int j) {
+	First = a[i];
+	for (k = i + 1; k <= j; k++)
+		if (a[k] > First) 
+			return(k);
+		else if (a[k] < First)
+			return(i);
+	return(-1);
+}
+
+int Partition(int a[], int i, int j, int Pivot) {
+	Left = i;
+	Right = j;
+	do {
+		swap(a[Left], a[Right]);
+		while (a[Left] < a[Right])Left++;
+		while (a[Left] >= Pivot)Right--;
+	} while (Left < Right)
+		return(Left);
+}
