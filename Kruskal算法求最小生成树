@@ -1,0 +1,69 @@
+/*
+
+kruskal算法求最小生成树：
+首先将每条边从小到大排序
+从最小的开始，当选中之后，将节点加入一个子集
+当遍历到下一个的时候，检查节点是否在集合中
+如果不在，选入并且将节点归入集合
+直到最后。
+
+*/
+
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <cmath>
+#include <stack>
+#include <queue>
+using namespace std;
+int par[100];		
+void Init(int m) {					//初始化数组
+	for (int i = 0; i <= m; i++)	//让每个子集是自己
+		par[i] = i;
+}
+struct Node {					
+	int x;					//x是起点，y是重点，v是权值
+	int y;
+	int v;
+};
+Node* a = new Node[100];
+
+bool cmp(Node& a, Node& b) {
+	return a.v <= b.v;
+}
+int father(int x) {
+	int t = x;				//并查集寻找自己的父亲节点
+	if (par[x] != x)		//在kruskal中是确定是否是一个子集
+		t = father(par[x]);//一直递归直到找到父亲节点
+	return t;
+}
+
+void uni(int x, int y) {
+	par[father(y)] = father(x);//将两个节点加入一个集合
+}
+
+void kruskal(Node* a,int m) {
+	for (int i = 0; i < m; i++) {
+		cout << "选择" << a[i].x << "->"<<a[i].y << endl;
+		uni(a[i].x, a[i].y);
+	}
+}
+
+int main() {
+	int n, m;
+	cin >> n >> m;
+	Init(m);
+	int x, y, v;
+	for (int i = 0; i < m; i++)
+	{
+		cin >> x >> y >> v;
+		a[i].x = x;
+		a[i].y = y;
+		a[i].v = v;
+	}
+	sort(a, a + m, cmp);
+
+	kruskal(a, m);
+}
