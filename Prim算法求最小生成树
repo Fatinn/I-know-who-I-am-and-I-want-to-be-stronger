@@ -1,0 +1,77 @@
+/*
+prim算法求最小生成树:
+通过点来求最小
+先从第一个点出发
+找出连到此点各路线最下值
+选择它
+让它当做下次的寻找
+然后将它赋值为1 证明已连接
+这样在下次寻找中就不会选择
+亮点在lowcost的遍历中
+这个遍历可以将所有的可能给出并且排除已连接节点
+*/
+
+
+#define Max 100000
+
+struct Graph
+{
+	int table[Max][Max];  //邻接矩阵，Max定义为最大值
+	int n, e;			  //n为图顶点个数，e为图的边数
+};
+struct Info {
+	int data;
+	int from;
+};
+
+int Prim(Graph g)
+{
+	int sum = 0, v;
+	int vset[Max];
+	Info lowcost[Max];		//存放最小值
+	int i;
+	//Init
+
+	for (int i = 0; i < Max; i++)
+	{
+		vset[i] = 0;		//将每个顶点都设为0，意为都还没有链接
+	}
+
+	for (i = 1; i <= g->n; i++)
+	{
+		lowcost[i].data = g->table[i][i];	//初始化最小值都为无穷大
+		lowcost[i].from = 1;	//从第一个节点开始
+	}
+
+	vset[1] = 1;		//第一个节点链接
+
+	//main
+	for (i = 1; i <= g->n - 1; i++)
+	{
+		int k, min = Max, p = 0;
+		//find min weight && position
+		for (k = 1; k <= g->n; k++)
+		{
+			if (lowcost[k].data < min && vset[k] == 0) 
+			{
+				min = lowcost[k].data;	//比较当前节点的各个值，求出最小值
+				p = k;				//将最小值的节点保存下来
+			}
+		}
+		//add
+		sum += min;				//最小值的和即为最短路程
+		//update lowcost array
+		v = p;
+		for (k = 1; k <= g->n; k++)
+		{
+			if (vset[k] == 0 && g->table[v][k] < lowcost[k].data)
+			{
+				lowcost[k].data = g->table[v][k];		//此时用刚才求出的最小值节点，作为下一次的lowcost
+				lowcost[k].from = v;			//将下一个最小值给from
+			}
+		}
+		vset[v] = 1;		//变为1，意为该节点已链接
+
+	}
+	return sum;
+}
