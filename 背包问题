@@ -1,0 +1,75 @@
+#include <cstring>
+#include <string.h>
+
+const int MV = 5005;
+const int M = 5005;
+
+int dp[MV];
+int V;
+void init()
+{
+	memset(dp, 0, sizeof(dp));
+	// memset(dp,-1,sizeof(dp));
+	// dp[0] = 0;
+}
+int v[M], w[M];
+
+/*
+
+0-1背包
+最优化的是一个数组
+
+从数组最后也就是V开始往前排
+每次只关注V-vi的时候 
+
+*/
+void zero_one_pack(int vi, int wi)
+{
+	for (int i = V; i >= vi; i--)
+	{
+		dp[i] = max(dp[i], dp[i - vi] + wi);
+	}
+}
+/*
+多重背包
+也是优化为一个数组
+
+从数组最开始排
+因为每个物品可以选多个 所以我们恰恰需要从前面覆盖
+则从开始
+*/
+void complete_pack(int vi, int wi)
+{
+	for (int i = vi; i <= V; i++)
+	{
+		if (dp[i - vi] != -1 && dp[i - vi] + wi > dp[i])
+		{
+			dp[i] =  dp[i - vi] + wi;
+		}
+	}
+}
+int c[M];
+void multiple_pack(int vi, int wi, int ci)
+{
+	if (V / vi <= ci)
+	{
+		complete_pack(v1, wi);;
+		return;
+	}
+	//以上这种情况，属于物品数少于总数，那么就可以看成完全背包来做
+	for (int i = 1; i <= ci; i <<= 1)
+	{
+		ci -= i;
+		zero_one_pack(vi * i, wi * i);
+	}
+	//这种情况  我们将总数以二进制方式表示  每i个进行一个0-背包
+	zero_one_pack(vi * ci, wi * ci);
+	//最后将剩下的没凑齐的在做一次
+}
+int solve(int n)
+{
+	for (int i = 0; i < n; i++)
+	{
+
+	}
+}
