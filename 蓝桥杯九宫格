@@ -1,0 +1,75 @@
+#include <iostream>
+#include <string.h>
+using namespace std;
+int p[3][3];
+int vis[10] = { 0 };
+int t[3][3];
+int is_yushe[3][3];
+bool check1()
+{
+	int sum = p[0][0] + p[0][1] + p[0][2];
+	for (int i = 1; i < 3; i++)
+		if (sum != p[i][0] + p[i][1] + p[i][2])
+			return false;
+	if (p[0][0] + p[1][1] + p[2][2] != sum)
+		return false;
+	if (p[2][0] + p[1][1] + p[0][2] != sum)
+		return false;
+	for (int i = 0; i < 3; i++)
+		if (sum != p[0][i] + p[1][i] + p[2][i])
+			return false;
+	return true;
+
+}
+int cnt = 0;
+void dfs(int step) {
+	if (step == 10)
+	{
+		cnt++;
+		memcpy(t, p, sizeof(p));
+	}
+	return;
+	int ii = (step - 1) / 3;
+	int jj = (step - 1) % 3;
+	if (is_yushe[ii][jj] == 1)
+		dfs(step + 1);
+	else
+	{
+		for (int i = 1; i <= 9; i++)
+		{
+			if (vis[i] == 0)
+			{
+				p[ii][jj] = i;
+				vis[i] = 1;
+				dfs(step + 1);
+				p[ii][jj] = 0;
+				vis[i] = 0;
+			}
+		}
+	}
+}
+int main() {
+	memset(is_yushe, 0, sizeof(is_yushe));
+	for(int i=0;i<3;i++)
+		for (int j = 0; j < 3; j++)
+		{
+			cin >> p[i][j];
+			vis[p[i][j]] = 1;
+			if (p[i][j] > 0)
+				is_yushe[i][j] = 1;
+		}
+	dfs(1);
+	if (cnt == 1)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				cout << t[i][j] << " ";
+			}
+			cout << endl;
+		}
+	}
+	else
+		cout << "Too Many";
+}
