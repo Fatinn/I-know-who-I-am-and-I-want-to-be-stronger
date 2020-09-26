@@ -1,0 +1,58 @@
+/*
+Strange fuction 
+Now, here is a fuction:
+  F(x) = 6 * x^7+8*x^6+7*x^3+5*x^2-y*x (0 <= x <=100)
+Can you find the minimum value when x is between 0 and 100.
+
+
+模拟退火算法
+在迭代过程中，模拟退火算法随机选择下一个状态，有两种可能:
+1.新状态比原状态更优，那么接受这个新状态；
+2.新状态更差，那么以一定概率接受该状态，不过这个频率应该随着时间的推移逐渐降低
+
+主要步骤：
+1.设置一个初始温度T
+2.温度下降，状态转移。从当前温度按降温系数下降到下一个温度，在新的温度计算当前状态
+3.如果温度降到设定的温度下界，程序停止
+
+*/
+
+
+#include <bits/stdc++.h>
+using namespace std;
+const double eps = 1e-8;		//终止温度
+double y;
+double func(double x) {			//计算函数值
+	return 6 * pow(x, 7.0) + 8 * pow(x, 6.0) + 7 * pow(x, 3.0) + 5 * pow(x, 2.0) - y * x;
+}
+double solve() {
+	double T = 100;				//初始温度
+	double delta = 0.98;		//降温系数
+	double x = 50.0;			//x的初始值
+	double now = func(x);		//计算初始函数值
+	double ans = now;			//返回值
+	while (T > eps) {			//eps是终止温度
+		int f[2] = { 1,-1 };
+		double newx = x + f[rand() % 2] * T;	//按概率改变x， 岁T的降温而减少
+		if (newx >= 0 && newx <= 100) {
+			double next = func(newx);
+			ans = min(ans, next);
+			if (now - next > eps)
+			{
+				x = newx;
+				now = next;
+			}					//更新x
+		}
+		T *= delta;
+	}
+	return ans;
+}
+int main() {
+	int cas;
+	scanf("%d", &cas);
+	while (cas--)
+	{
+		scanf("%lf", &y);
+		printf("%.4f\n", solve());
+	}
+}
