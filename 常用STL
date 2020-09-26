@@ -1,0 +1,173 @@
+vector
+
+定义
+vector<int>a;			默认初始化，a为空
+vector<int>b(a);		用a定义b
+vector<int>a(100);		a有100个值为0的元素
+vector<int>a(100, 6);	a有100个值为6的元素
+
+vector<string>a(10, "NULL");		10个值为NULL的元素
+vector<string>vec(10, "hello");		10个值为hello的元素
+vector<string>b(a.begin, a.end());	b是a的复制
+	
+struct point { int x, y; };		a用来存放坐标
+vector<point>a;
+
+vector<int>a[MAXN];			定义一个二维数组，第一维是固定的MAXN，第二维是动态的
+
+操作
+a.push_back(100);				在尾部添加元素
+int size = a.size();			求元素个数
+bool isEmpty = a.empty();		判断是否为空
+cout << a[0] << endl;			打印第一个元素
+a.insert(a.begin() + i, k);		在第i个元素前面插入k
+a.push_back(8);					尾部插入值为8的元素
+a.insert(a.end(), 10, 5);		在尾部插入10个值为5的元素
+a.pop_back();					删除末尾元素
+a.erase(a.begin() + i, a.begin() + j); 删除区间[i, j - 1]的元素
+a.erase(a.begin() + 2);			删除第三个元素
+a.resize(n);					数组大小变为n
+a.clear();						清空
+reverse（a.begin(), a.end());	用函数reverse（）反转数组
+sort(a.begin(),a.end() )		用函数sort()排序，从小到大排
+
+
+栈和Stack
+
+stack<Type>s;		定义栈，Type为数据类型，例如int float char 等
+s.push(item);		把item放到栈顶
+s.top();			返回栈顶的元素但不会删除
+s.pop();			删除栈顶的元素，但不会返回。在出栈时要进行两步操作，即
+					返回top()获得栈顶元素，再pop()删除栈顶元素
+s.size();			返回栈中元素的个数
+s.empty;			检查栈中是否为空，如果为空，返回true，否则返回false
+
+队列和queue
+
+queue<Type>q;				定义栈，Type为数据类型，例如int float char 等
+q,push(item);				把item放进队列
+q.front();					返回队首元素，但不会删除
+q.pop();						删除队首元素
+q.back();					返回队尾元素
+q.size();						返回元素个数
+q.empty();					检查队列是否为空
+
+优先队列容器与队列一样，只能从队尾插入元素，从队首删除元素。但是它有一个特性，就是队列中最大的元素总是位于队首，所以出队时，并非按照先进先出的原则进行，而是将当前队列中最大的元素出队。这点类似于给队列里的元素进行了由大到小的顺序排序。元素的比较规则默认按元素值由大到小排序，可以重载“<”操作符来重新定义比较规则。
+优先级队列可以用向量(vector)或双向队列(deque)来实现(注意list container不能用来实现queue，因为list的迭代器不是任意存取iterator，而pop中用到堆排序时是要求randomaccess iterator 的!)：
+priority_queue<vector<int>, less<int> > pq1; 　　　 // 使用递增less<int>函数对象排序
+priority_queue<deque<int>, greater<int> > pq2; 　　// 使用递减greater<int>函数对象排序 
+二、priority_queue
+基本操作：
+empty() 　　   如果队列为空，则返回真
+pop()　　　　删除对顶元素，删除第一个元素
+push() 　　     加入一个元素
+size() 　　　  返回优先队列中拥有的元素个数
+top() 　　　　返回优先队列对顶元素，返回优先队列中有最高优先级的元素
+在默认的优先队列中，优先级高的先出队。在默认的int型中先出队的为较大的数。
+头文件：
+#include <queue>
+声明方式：
+1、普通方法：
+priority_queue<int> q;   　　　　　　　　　　　　  //通过操作，按照元素从大到小的顺序出队
+priority_queue<int,vector<int>, greater<int> > q;  　　//通过操作，按照元素从小到大的顺序出队
+2、自定义优先级：
+struct cmp {     
+　　operator bool ()(int x, int y)     
+　　{        
+　　　　 return　x > y;　　 // x小的优先级高       //也可以写成其他方式，如： return p[x] > p[y];表示p[i]小的优先级高
+　　}
+};
+priority_queue<int, vector<int>, cmp> q;    //定义方法
+//其中，第二个参数为容器类型。第三个参数为比较函数。
+3、结构体声明方式：
+struct node {     
+　　int x, y;     
+　　friend bool operator < (node a, node b)     
+　　{         
+　　　　return a.x > b.x;    //结构体中，x小的优先级高     
+　　}
+};
+priority_queue<node>q;   //定义方法
+//在该结构中，y为值, x为优先级。
+//通过自定义operator<操作符来比较元素中的优先级。
+//在重载”<”时，最好不要重载”>”，可能会发生编译错误
+Lists将元素按顺序储存在链表中. 与 向量(vectors)相比, 它允许快速的插入和删除，但是随机访问却比较慢.
+list<int> LISTINT	定义
+push_front (const value_type& val)  在list首元素前插入值为 val的元素
+pop_front() 删除list中第一个元素
+push_back (const value_type& val)   在list尾部插入值为val的元素
+pop_back() 删除list中最后一个元素
+insert (iterator position, const value_type& val)    在list position 位置中插 入值为val的元素
+insert (iterator position, size_type n, const value_type& val)    在list position位置插入n 个值为val的元素
+insert (iterator position, InputIterator ﬁrst, InputIterator last)    在list position位置插入 [ﬁrst, last)区间中元素
+erase (iterator position)    删除list position位置的 元素
+erase (iterator ﬁrst, iterator last)   删除list中[ﬁrst, last)区 间中的元素
+swap (list& x)   交换两个list中的元素
+resize (size_type n, value_type val = value_type())   将list中有效元素个数改变 到n个，多出的元素用val 填充
+clear() 清空list中的有效元素
+
+set
+
+set<Type>A;			定义
+A.insert(item);			把item放进set
+A.erase(item);			删除元素item
+A.clear();				清空set
+A.empty();				判断是否为空
+A.size();					返回元素个数
+A.find(k);				返回一个迭代器，指向键值k
+A.lower_bound(k);		返回一个迭代器，指向键值不小于k的第一个元素
+A.upper_bound();		返回一个迭代器，指向键值大于k的第一个元素
+
+map
+Map是c++的一个标准容器，她提供了很好一对一的关系，在一些程序中建立一个map可以起到事半功倍的效果，总结了一些map基本简单实用的操作！
+1. map最基本的构造函数；
+   map<string , int >mapstring;        map<int ,string >mapint;
+   map<sring, char>mapstring;        map< char ,string>mapchar;
+   map<char ,int>mapchar;           map<int ,char >mapint；
+2. map添加数据；
+   map<int ,string> maplive;  
+   1.maplive.insert(pair<int,string>(102,"aclive"));
+   2.maplive.insert(map<int,string>::value_type(321,"hai"));
+   3, maplive[112]="April";//map中最简单最常用的插入添加！
+3，map中元素的查找：
+  find()函数返回一个迭代器指向键值为key的元素，如果没找到就返回指向map尾部的迭代器。        
+   map<int ,string >::iterator l_it;; 
+   l_it=maplive.find(112);
+   if(l_it==maplive.end())
+               cout<<"we do not find 112"<<endl;
+   else cout<<"wo find 112"<<endl;
+4,map中元素的删除：
+   如果删除112；
+   map<int ,string >::iterator l_it;;
+   l_it=maplive.find(112);
+   if(l_it==maplive.end())
+       cout<<"we do not find 112"<<endl;
+   else maplive.erase(l_it); //delete 112;
+map的基本操作函数：
+      C++ Maps是一种关联式容器，包含“关键字/值”对
+     begin()         返回指向map头部的迭代器
+     clear(）        删除所有元素
+     count()         返回指定元素出现的次数
+     empty()         如果map为空则返回true
+     end()           返回指向map末尾的迭代器
+      equal_range()   返回特殊条目的迭代器对
+      erase()         删除一个元素
+     find()          查找一个元素
+     get_allocator()  返回map的配置器
+     insert()        插入元素
+     key_comp()      返回比较元素key的函数
+     lower_bound()   返回键值>=给定元素的第一个位置
+      max_size()      返回可以容纳的最大元素个数
+     rbegin()        返回一个指向map尾部的逆向迭代器
+     rend()          返回一个指向map头部的逆向迭代器
+     size()          返回map中元素的个数
+     swap()           交换两个map
+     upper_bound()    返回键值>给定元素的第一个位置
+     value_comp()     返回比较元素value的函数
+
+sort
+sort()是C++给的一种排序函数，头文件为 #include <algorithm> 
+语法描述：sort（begin，end，cmp），cmp参数可以没有，如果没有默认非降序排序。
+
+
+
