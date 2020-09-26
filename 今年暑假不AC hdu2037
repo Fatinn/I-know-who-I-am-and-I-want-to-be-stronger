@@ -1,0 +1,26 @@
+/*
+
+把n个活动按结束时间排序
+选择第一个结束的活动，并删除（或跳过）与它时间相冲突的活动
+重复步骤上一步骤，直到活动为空。 每次选择剩下的活动中个最早结束的那个活动，并删除与它时间冲突的活动
+
+*/
+struct node {
+	int start, end;				//定义活动的起止时间
+} record[MAXN];
+bool cmp(const node& a, const node& b) {
+	return a.end < b.end;	
+}
+
+for (int i = 0; i < n; i++)
+	cin >> record[i].start >> record[i].end;	//输入n个活动
+sort(record, record + n, cmp);		//按结束时间排序
+int count = 0;
+int lastend = -1;
+for (int i = 0; i < n; i++) {		//贪心算法
+	if (record[i].start >= lastend) {	//后一个起始时间大于等于前一个终止时间
+		count++;
+		lastend = record[i].end;		//记录前一个活动的终止时间
+	}
+}
+cout << count << endl;			//输出活动个数
