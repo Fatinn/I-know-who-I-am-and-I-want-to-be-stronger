@@ -1,0 +1,32 @@
+/*
+poj1521 "Entropy"
+
+首先统计字符出现的频次，然后用Huffman算法编码，
+最后计算编码后的总长度。不过，由于只需要输出编码的总长度，而不要求输出每个字符的编码
+所以可以跳过编码过程
+
+*/
+string s;
+priority_queue <int, vector<int>, greater<int>> Q;
+											//优先队列，最小的在队首
+while (getline(cin, s) && s != "END") {	//输入字符串
+	int t = 1;
+	sort(s.begin(), s.end());			
+	for (int i = 1; i < s.length(); i++) {//统计字符出现的频次，并放进优先队列
+		if (s[i] != s[i - 1]) {
+			Q.push(t);
+			t = 1;
+		}
+		else t++;
+	}
+	Q.push(t);
+	int ans = 0;
+	while (Q.size() > 1) {
+		int a = Q.top(); Q.pop();		//提取队中最小的两个
+		int b = Q.top(); Q.pop();
+		Q.push(a + b);
+		ans += a + b;					//直接计算编码的总长度
+	}
+	Q.pop();
+}
+//ans就是编码后的总长度
