@@ -1,0 +1,44 @@
+/*
+回文串 poj 3280 “Cheapest Palindrome”
+给定字符串s，长度为m， 有n个小写字母构成。在s的任意位置增删字母，把它变成回文串，
+增删特定字母的花费不畅通。求最小花费。
+
+定义状态dp[i][j]表示字符串s的子区间s[i,j]变成回文的最小花费
+
+另外，在考虑删除和插入的话费时，由于这两种该操作是等价的（这头加和那头减一样），
+所以只要去这两种的最小值就行了。 用数组w[]定义字符的花费
+
+有以下3种情况：
+（1）如果s[i]=s[j],那么dp[i][j]=dp[i+1][j-1]
+（2）如果dp[i+1][j]是回文串，那么dp[i][j]=dp[i+1][j]+w[i]
+（3）如果dp[i][j-1]是回文串，那么dp[i][j]=dp[i][j-1]+w[j]
+
+总结2 3 ，状态转移方程式dp[i][j]=min(dp[i+1][j]+w[i] , dp[i][j-1]+w[j] ）
+
+该程序包含两层循环，外层i枚举子区间起点，内层j枚举重点。因为需要从小区间扩展到大区间，
+所以i从s的尾端开始，逐步回退夸大区间，直到首端。
+*/
+
+#include <iostream>
+using namespace std;
+int w[30], n, m, dp[2005][2005];
+char s[2005], ch;
+int main() {
+	int x, y;
+	while (cin >> n >> m) {
+		cin >> s;
+		for (int i = 0; i < n; i++) {
+			cin >> ch >> x >> y;			//读取每个字符的插入和删除的花费
+			w[ch - 'a'] = min(x, y);		//取其中的最小值
+		}
+		for(int i=m-1;i>=0;i--)
+			for (int j = i + 1; j < m; j++) {
+				if (s[i] == s[j])
+					dp[i][j] = dp[i + 1][j - 1];
+				else
+					dp[i][j] = min(dp[i + 1][j] + w[s[i] - 'a'], dp[i][j - 1] + w[s[j] - 'a']);
+			}
+		count << dp[0][m - 1] < , endl;
+	}
+	return 0;
+}
