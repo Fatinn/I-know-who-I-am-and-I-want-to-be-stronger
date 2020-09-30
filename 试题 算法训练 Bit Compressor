@@ -1,0 +1,75 @@
+/*
+
+那么现在压缩的结构就是 1xxxx0  我们需要做的就是 一个一个找出压缩的结构进行处理 
+到这里  题目已经变为 如何找一个符合条件的结构, 然后进行处理,然后继续找 , 那么就形成了一个递归的过程.
+如何找符合条件的结构:
+1xxxx0  可以看出 结构中 开头为1 结尾为0  所以需要这两个条件来找出符合条件的结构
+
+结构的处理:
+是否符合压缩条件 如果符合展开 并计算1的个数和串此时的长度
+
+如果不符合压缩条件 比如1010101 ，开头两位10  符合压缩结构但是不符合压缩的条件  
+所以不需要统计 只需 n+1 len+1 然后继续递归
+*/
+#include <iostream>
+#incldue <string>
+using namespace std;
+int l, n;			//l是原来长度， n是原来1的个数
+int length;			//求出压缩后的长度
+string data;		//存放压缩后的串
+int result = 0;		//答案方法
+	
+int get(int b, int e)	//传过来的参数是从第一个1到这个串的下一个字符
+{						//因为下次递归直接是下一个字符 所以要多加一位
+	int i;
+	int sum;			//二进制转十进制
+	for (i = b; i < e; i++)
+	{
+		sum *= 2;
+		sum += data[i] - '0';
+	}
+	return sum;			//返回1的个数
+}
+
+void dfs(int start, int len, int nsum)
+{
+	if(result > 1)	return;	// 如果超过一种 直接返回
+	if (len > l) return;	// 如果通过计算出原来的长度大于给定的长度，直接返回
+	if (nsum > n) return;	// 如果计算出的原来的1的个数大于给定的1的个数，直接返回
+
+	if (start == length && len == l && nsum == n)
+	{
+		result++;		//if条件判断里面，最后dfs到最后一位，而且计算的原长和1的个数与给定相符
+		return;			//方案++ 返回；
+	}
+
+	int i;
+	if (data[start] == '1') 
+	{
+		//注意这个地方i从start开始的， 不要从start+1开始
+		//这里从start开始 是为了处理10这种情况 10是不符合压缩的条件的
+		//所以 需要把1 当做一个数 进行处理 ，然后继续递归
+		for (i = start; i < length; i++)
+		{
+			if (i + 1 < length && data[i + 1] == '1')
+				continue;	//如果串没结束 而且下一个是1 那就继续找下一个
+			int t = get(start, i + 1);	
+			//如果下一个为0 那说明压缩的1结束了。那就计算怎么压缩的
+			if (t == 3) dfs(i + 1, len + 2, nsum + 2);	//因为11这种情况 压缩前可以是11 也可以是111 所以+2
+			dfs(i + 1, len + t, nsum + t);		//从当前串的下一个dfs，并把长度加到原来的长度和1的长度上
+		}
+	}
+
+
+}
+
+int main() {
+	cin >> l >> n;
+	cin >> data;
+	length = data.length();
+	dfs(0, 0, 0);
+	if (result == 1) cout << "YES\n";
+	if (result > 1) cout << "NOT UNIOUE\n";
+	if (result < 1) cout << "NO\n";
+	return 0;
+}
