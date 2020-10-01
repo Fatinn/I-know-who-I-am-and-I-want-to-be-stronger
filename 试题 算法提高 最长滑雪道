@@ -1,0 +1,59 @@
+
+/*
+很明显的dfs做法，每个位置从四个方向试探，
+找小于当前节点的
+
+但是输入并不是有序的，所以无法确定从哪个节点开始
+到最后是最大的
+所以直接在主函数那从第一个到最后一个进行一个循环
+找出最大值
+*/
+
+#include <bits/stdc++.h>
+#include<iostream>
+#include<cstring>
+using namespace std;
+int sum = 0;
+int visit[12][12];
+int snow[12][12];
+int nextx[4] = { 0,0,-1,1 };
+int nexty[4] = { -1,1,0,0 };
+int r, c;
+
+int dfs(int x, int y, int step)
+{
+	sum = max(sum, step);
+	for (int i = 0; i < 4; i++)
+	{
+		int xx = x + nextx[i];
+		int yy = y + nexty[i];
+		if (xx >= 0 && xx < r && yy >= 0 && yy < c && !visit[xx][yy] && snow[xx][yy] < snow[x][y])
+		{
+			visit[xx][yy] = 1;
+			dfs(xx, yy, step + 1);
+			visit[xx][yy] = 0;
+		}
+	}
+	return sum;
+}
+
+int main() {
+
+
+	cin >> r >> c;
+	for (int i = 0; i < r; i++) {
+		for (int j = 0; j < c; j++)
+		{
+			cin >> snow[i][j];
+		}
+	}
+	for (int i = 0; i < r; i++) {
+		for (int j = 0; j < c; j++) {
+			memset(visit, 0, sizeof visit);
+			visit[i][j] = 1;
+			dfs(i, j, 1);
+		}
+	}
+	cout << sum;
+	return 0;
+}
