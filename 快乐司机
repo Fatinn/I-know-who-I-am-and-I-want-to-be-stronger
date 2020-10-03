@@ -1,0 +1,45 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+struct item {
+    int gi;
+    int pi;
+    float gp;//pi除gi 单位价值
+}it[100000];
+bool com(const item& a, const item& b)
+{
+    //结构体排序  按gp升序
+    return a.gp > b.gp;
+}
+int main()
+{
+    int n, w;//n为供选择的物品数量 w为荷载重量
+    int i;//循环变量
+    float sum = 0;//总价值
+    cin >> n >> w;
+    for (i = 0; i < n; i++)
+    {
+        cin >> it[i].gi >> it[i].pi;
+        it[i].gp = it[i].pi * 1.0 / it[i].gi;
+    }
+    sort(it, it + n, com);//调用库函数sort
+    //排序完后，单位价值高的在数组前面
+    //理所应当的从数组前面还是遍历
+    for (i = 0; i < n && w>0; i++)
+    {
+        //如果w大于物品的重量 那么全部司机带走
+        if (w >= it[i].gi) {
+            sum += it[i].pi;//sum累加上这个物品的价值
+            w -= it[i].gi;//w减去物品的重量
+        }
+        //如果w小于物品的重量
+        //也就是说 这是能装载的最后一件物品了
+        else {
+            sum += (w * it[i].gp);
+            w = 0;//直接归零
+        }
+    }
+    printf("%.1f", sum);
+    return 0;
+
+}
