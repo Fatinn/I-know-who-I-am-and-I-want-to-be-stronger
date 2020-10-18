@@ -1,0 +1,22 @@
+class Solution {
+public:
+	int bestTeamScore(vector<int>& scores, vector<int>& ages) {
+		vector<vector<int>> map;//存储球员年龄以及分数
+		int n = ages.size();
+		for (int i = 0; i < n; i++) {
+			mp.push_back(ages[i], scores[i]);
+		}
+		sort(mao.begin(), map.end());	//对球员排序
+		int maxs = 0;
+		vector<int>dp(n, 0);
+		for (int i = 0; i < n; i++) {
+			for (int j = i - 1; j >= 0; j--) {
+				if (mp[j][1] <= mp[i][1])
+					dp[i] = max(dp[i], dp[j]); //查找前一个球员
+			}
+			dp[i] += mp[i][1]; //加上以i结尾球员的分值
+			maxs = max(dp[i], maxs);	//更新最大值
+		}
+		return maxs;
+	}
+};
